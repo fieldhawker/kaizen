@@ -1,0 +1,132 @@
+# -------------------
+# mysql
+# -------------------
+mysql:
+  restart: always
+  image: mysql:5.7
+  ports:  
+    - "3306:3306" 
+  volumes:
+    - ./mysql/conf:/etc/mysql/conf.d
+    - ./mysql/init:/docker-entrypoint-initdb.d
+    - /home/core/share/docker/mysql/datadir:/var/lib/mysql
+  environment:
+    MYSQL_USER: "user"  
+    MYSQL_PASSWORD: "pass"
+    MYSQL_ROOT_PASSWORD: "pass"
+    MYSQL_DATABASE: "test"
+  container_name: mysql
+# -------------------
+# phpmyadmin
+# -------------------
+phpmyadmin:
+  image: corbinu/docker-phpmyadmin
+  ports:
+    - "8081:80"
+  links:
+    - mysql:mysql
+  environment:
+    MYSQL_USERNAME: root
+# -------------------
+# hello world
+# -------------------
+helloworld:
+  build: ./helloworld
+  volumes:
+    - ./helloworld/html:/var/www/html
+    - ./helloworld/httpd/apache2.conf:/etc/apache2/apache2.conf
+  ports:
+    - "81:80"
+    - "444:443"
+  links:
+    - mysql:mysql
+  container_name: helloworld
+## -------------------
+## lararepo
+## -------------------
+#larabase:
+#  build: ./larabase
+#  volumes:
+##    - ./laravel_app/laravel:/var/www/html
+#    - ./lararepo:/var/www/html
+#    - ./larabase/httpd/apache2.conf:/etc/apache2/apache2.conf
+#  ports:
+#    - "89:80"
+#    - "449:443"
+#  links:
+#    - mysql:mysql
+#  container_name: larabase
+## -------------------
+## phpmyadmin
+## -------------------
+#phpmyadmin:
+#  image: corbinu/docker-phpmyadmin
+#  ports:
+#    - "8090:80"
+#  links:
+#    - mysql:mysql
+#  environment:
+#    MYSQL_USERNAME: root
+## -------------------
+## slackで連携するhubot
+## -------------------
+#slack_hubot:
+#  restart: always
+#  build: ./slack_hubot
+#  volumes:
+#    - ./slack_hubot/scripts:/home/hubot/myslackbot/scripts
+#  ports:
+#    - "8080:8080"
+#  container_name: slack_hubot
+# # ldap
+# ldap:
+#   image: osixia/openldap
+# #  volumes_from:
+# #    - data-mysql
+#   volumes:
+#     - /data/slapd/database:/var/lib/ldap
+#     - /data/slapd/config:/etc/ldap/slapd.d
+# #  ports:
+# #    - "3306:3306"
+#   environment:
+#     LDAP_ORGANISATION: "Sep"
+#     LDAP_DOMAIN: "admin.example.org"
+#     LDAP_ADMIN_PASSWORD: "password"
+#     LDAP_TLS: "false"
+# # phpldapadmin
+# phpldapadmin:
+#   image: osixia/phpldapadmin
+#   # volumes:
+#   #   - /data/my-env.yaml:/container/environment/env.yaml
+#   links:
+#     - ldap:ldap
+#   hostname: "phpldapadmin"
+#   domainname: "example.org"
+#   ports:
+#     - "1080:81"
+#     - "10443:444"
+#   environment:
+#     PHPLDAPADMIN_LDAP_HOSTS: "ldap"
+# #    PHPLDAPADMIN_HTTPS: "false"
+#lararepo:
+#  build: ./lararepo
+#  volumes:
+#    - ./lararepo:/var/www/html
+#    - ./lararepo/httpd/apache2.conf:/etc/apache2/apache2.conf
+#  ports:
+#    - "81:80"
+#    - "444:443"
+#  links:
+#    - mysql:mysql
+#  container_name: lararepo
+#lara:
+#  build: ./lara
+#  volumes:
+#    - ./lara/application:/var/www/html
+#    - ./lara/httpd/apache2.conf:/etc/apache2/apache2.conf
+#  ports:
+#    - "82:80"
+#    - "445:443"
+#  links:
+#    - mysql:mysql
+#  container_name: lara

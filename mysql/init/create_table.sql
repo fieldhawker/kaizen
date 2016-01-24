@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS `test`.`test` (id INT, name VARCHAR(255));
